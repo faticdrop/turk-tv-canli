@@ -339,9 +339,10 @@ export default function Player({
       className={
         dolu
           ? "absolute inset-0 overflow-hidden bg-black"
-          : // max-h: yatay moddaki telefonda 16:9 video ekrandan taşıp altındaki
-            // düğmeleri ve kanal listesini erişilemez hale getiriyordu.
-            "relative aspect-video max-h-[60vh] w-full overflow-hidden bg-black shadow-2xl ring-1 ring-white/10 sm:rounded-xl lg:max-h-none"
+          : // dvh kullanılır: iOS'ta vh, adres çubuğu gizliyken ölçüldüğünden
+            // çubuk görünürken video ekrandan taşar ve sabit öğe zıplar.
+            // Tavan düşük tutulur ki altındaki kanal listesine yer kalsın.
+            "relative aspect-video max-h-[42dvh] w-full overflow-hidden bg-black shadow-2xl ring-1 ring-white/10 sm:max-h-[55dvh] sm:rounded-xl lg:max-h-none"
       }
     >
       {source.kind === "youtube" ? (

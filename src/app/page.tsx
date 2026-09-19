@@ -32,6 +32,10 @@ export default function Home() {
   const [seritGorunur, setSeritGorunur] = useState(false);
   const [epg, setEpg] = useState<Record<string, Akis>>({});
   const [girisBitti, setGirisBitti] = useState(false);
+  /** Açılış animasyonu yalnızca kısa süre uygulanır: bittikten sonra sınıf
+   *  kaldırılmazsa <main> üzerinde kalıcı bir transform kalır ve iOS'ta
+   *  içindeki position:fixed öğeler ekrana değil bu kutuya göre konumlanır. */
+  const [acilisAnimasyonu, setAcilisAnimasyonu] = useState(false);
 
   const aramaRef = useRef<HTMLInputElement>(null);
   const oynaticiRef = useRef<HTMLDivElement>(null);
@@ -142,10 +146,11 @@ export default function Home() {
   // Tam ekranda arka plan kaymasın
   useEffect(() => {
     if (!tamEkran) return;
-    const eski = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    // Eski değeri saklayıp geri yazmak yerine özellik tamamen kaldırılır:
+    // saklanan değer "hidden" olursa kaydırma kalıcı olarak kilitli kalır.
     return () => {
-      document.body.style.overflow = eski;
+      document.body.style.removeProperty("overflow");
     };
   }, [tamEkran]);
 
@@ -270,11 +275,19 @@ export default function Home() {
 
   return (
     <>
-      {!girisBitti && <GirisEkrani onBasla={() => setGirisBitti(true)} />}
+      {!girisBitti && (
+        <GirisEkrani
+          onBasla={() => {
+            setGirisBitti(true);
+            setAcilisAnimasyonu(true);
+            setTimeout(() => setAcilisAnimasyonu(false), 950);
+          }}
+        />
+      )}
 
       <main
-        className={`min-h-screen bg-neutral-950 text-neutral-100 ${
-          girisBitti ? "uygulama-ac" : ""
+        className={`min-h-dvh bg-neutral-950 text-neutral-100 ${
+          acilisAnimasyonu ? "uygulama-ac" : ""
         }`}
       >
       <header className="z-20 border-b border-white/10 bg-neutral-950/90 backdrop-blur lg:sticky lg:top-0">
@@ -428,7 +441,7 @@ export default function Home() {
             </p>
           </div>
 
-          <aside className="mt-4 px-4 sm:px-0 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:max-h-[calc(100vh-8rem)] lg:overflow-y-auto">
+          <aside className="mt-4 px-4 sm:px-0 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-0 lg:max-h-[calc(100dvh-8rem)] lg:overflow-y-auto">
             <div className="mb-3 flex flex-wrap gap-1.5">
               {filtreler.map((f) => (
                 <button
@@ -484,14 +497,17 @@ export default function Home() {
               </ul>
             )}
           </aside>
-        </section>
+        {/* Altbilgi section içinde durur: sabit video, kapsayıcısı
+            bitince sabitlenmeyi bırakır; dışarıda kalsaydı sayfa
+            sonunda yukarı kayardı. */}
 
-        <footer className="mt-12 border-t border-white/10 px-4 pb-8 pt-6 text-xs leading-relaxed text-neutral-500 sm:px-0">
+        <footer className="mt-12 border-t border-white/10 px-4 pb-8 pt-6 text-xs leading-relaxed text-neutral-500 sm:px-0 lg:col-span-2 lg:col-start-1 lg:row-start-3">
           Bu uygulama yalnızca yayıncıların kendi resmî ve halka açık canlı yayın
           kaynaklarına (TRT açık HLS yayınları ve kanalların doğrulanmış resmî YouTube
           canlı yayınları) bağlanır. Yayınlar ilgili kanallara aittir; hiçbir içerik
           kopyalanmaz, kaydedilmez veya yeniden yayınlanmaz.
         </footer>
+        </section>
         </div>
       </main>
     </>

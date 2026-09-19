@@ -81,3 +81,12 @@ body {
     animation: none;
   }
 }
+
+/* Mobilde kaydırma zincirlemesi ve sıçrama, sabit video ile birlikte
+   sayfanın rastgele yerlerde durmasına yol açıyordu. */
+html {
+  overscroll-behavior-y: none;
+}
+body {
+  overscroll-behavior-y: contain;
+}

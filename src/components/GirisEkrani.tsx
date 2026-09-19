@@ -50,7 +50,7 @@ export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
     <div
       // Ekranın herhangi bir yerine dokunmak da sesi açar
       onPointerDown={sessiz ? sesiAc : undefined}
-      className={`fixed inset-0 z-50 overflow-hidden bg-neutral-950 transition-all duration-[900ms] ease-[cubic-bezier(0.65,0,0.35,1)] ${
+      className={`fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-neutral-950 transition-all duration-[900ms] ease-[cubic-bezier(0.65,0,0.35,1)] ${
         cikiyor ? "pointer-events-none scale-110 opacity-0 blur-md" : "scale-100 opacity-100"
       }`}
     >
@@ -59,7 +59,9 @@ export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
         <div className="absolute left-1/4 top-2/3 h-80 w-80 rounded-full bg-fuchsia-500/10 blur-[100px]" />
       </div>
 
-      <div className="relative flex h-full flex-col items-center justify-center gap-6 px-5 py-8">
+      {/* min-h-dvh + auto kaydırma: yatay moddaki kısa ekranda başlık, video ve
+          düğme sığmayınca düğme erişilemez hale geliyordu. */}
+      <div className="relative flex min-h-dvh flex-col items-center justify-center gap-6 px-5 py-8">
         <h1 className="giris-yaz text-center text-2xl font-semibold tracking-tight text-white sm:text-4xl">
           Fatih Özen&apos;den TV uygulaması
         </h1>
