@@ -10,6 +10,7 @@ export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
   const [cikiyor, setCikiyor] = useState(false);
   const [videoVar, setVideoVar] = useState(true);
   const [sessiz, setSessiz] = useState(true);
+  const [bitti, setBitti] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   /**
@@ -74,14 +75,15 @@ export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
                 className="aspect-video h-full w-full object-cover"
                 src={VIDEO_YOLU}
                 autoPlay
-                loop
                 playsInline
                 preload="auto"
                 onVolumeChange={(e) => setSessiz(e.currentTarget.muted)}
+                // loop yok: video bir kez oynar ve son karede durur
+                onEnded={() => setBitti(true)}
                 onError={() => setVideoVar(false)}
               />
 
-              {sessiz && (
+              {sessiz && !bitti && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -118,10 +120,9 @@ export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
             e.stopPropagation();
             basla();
           }}
-          className="giris-dugme group relative overflow-hidden rounded-full bg-white px-8 py-3.5 text-base font-semibold text-neutral-900 shadow-xl transition hover:scale-[1.04] active:scale-95"
+          className="giris-dugme giris-dugme-dikkat relative rounded-full px-9 py-4 text-base font-bold tracking-wide shadow-xl transition-transform active:scale-95 sm:text-lg"
         >
-          <span className="relative z-10">Uygulamayı Başlat</span>
-          <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-sky-200/70 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
+          Uygulamayı Başlat
         </button>
       </div>
     </div>
