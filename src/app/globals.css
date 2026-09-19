@@ -34,3 +34,50 @@ body {
 .serit::-webkit-scrollbar {
   display: none;
 }
+
+/* Giriş ekranı: öğeler sırayla belirir */
+@keyframes girisBelir {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.giris-yaz,
+.giris-video,
+.giris-dugme {
+  animation: girisBelir 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.giris-video {
+  animation-delay: 0.12s;
+}
+.giris-dugme {
+  animation-delay: 0.26s;
+}
+
+/* Uygulama, giriş ekranı kapanırken yerine oturur */
+@keyframes uygulamaAc {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.uygulama-ac {
+  animation: uygulamaAc 0.9s cubic-bezier(0.65, 0, 0.35, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .giris-yaz,
+  .giris-video,
+  .giris-dugme,
+  .uygulama-ac {
+    animation: none;
+  }
+}

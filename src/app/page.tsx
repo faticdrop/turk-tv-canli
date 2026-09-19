@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Player from "@/components/Player";
 import KanalSeridi from "@/components/KanalSeridi";
+import GirisEkrani from "@/components/GirisEkrani";
 import { CHANNELS, CATEGORIES, initials, type Category } from "@/data/channels";
 import type { Akis } from "@/lib/epg";
 
@@ -29,6 +30,7 @@ export default function Home() {
   const [tamEkran, setTamEkran] = useState(false);
   const [seritGorunur, setSeritGorunur] = useState(false);
   const [epg, setEpg] = useState<Record<string, Akis>>({});
+  const [girisBitti, setGirisBitti] = useState(false);
 
   const aramaRef = useRef<HTMLInputElement>(null);
   const oynaticiRef = useRef<HTMLDivElement>(null);
@@ -266,7 +268,14 @@ export default function Home() {
   const kanalNo = CHANNELS.findIndex((c) => c.id === activeId) + 1;
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100">
+    <>
+      {!girisBitti && <GirisEkrani onBasla={() => setGirisBitti(true)} />}
+
+      <main
+        className={`min-h-screen bg-neutral-950 text-neutral-100 ${
+          girisBitti ? "uygulama-ac" : ""
+        }`}
+      >
       <header className="z-20 border-b border-white/10 bg-neutral-950/90 backdrop-blur lg:sticky lg:top-0">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-3 px-4 py-3">
           <h1 className="text-base font-semibold tracking-tight sm:text-lg">
@@ -487,7 +496,8 @@ export default function Home() {
           canlı yayınları) bağlanır. Yayınlar ilgili kanallara aittir; hiçbir içerik
           kopyalanmaz, kaydedilmez veya yeniden yayınlanmaz.
         </footer>
-      </div>
-    </main>
+        </div>
+      </main>
+    </>
   );
 }

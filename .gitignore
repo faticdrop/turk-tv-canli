@@ -43,3 +43,6 @@ next-env.d.ts
 # Cloudflare
 .open-next/
 .wrangler/
+
+# giris videosunun kaynak kopyasi (public/giris-video.mp4 kullaniliyor)
+uygulama giris video.mp4
