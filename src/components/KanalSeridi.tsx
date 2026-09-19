@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { initials, type Channel } from "@/data/channels";
+import type { Channel } from "@/data/channels";
+import KanalLogo from "@/components/KanalLogo";
 import type { Akis } from "@/lib/epg";
 
 /**
@@ -53,12 +54,7 @@ export default function KanalSeridi({
                   secili ? "bg-white/25 ring-1 ring-white/50" : "bg-white/10 hover:bg-white/20"
                 }`}
               >
-                <span
-                  className="mb-1.5 grid h-11 w-full place-items-center rounded-md text-sm font-bold"
-                  style={{ backgroundColor: c.color }}
-                >
-                  {initials(c.name)}
-                </span>
+                <KanalLogo channel={c} className="mb-1.5 h-11 w-full rounded-md" />
                 <span className="block truncate text-[11px] font-medium text-white">
                   {c.name}
                 </span>

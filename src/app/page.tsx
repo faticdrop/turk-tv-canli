@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Player from "@/components/Player";
 import KanalSeridi from "@/components/KanalSeridi";
 import GirisEkrani from "@/components/GirisEkrani";
-import { CHANNELS, CATEGORIES, initials, type Category } from "@/data/channels";
+import KanalLogo from "@/components/KanalLogo";
+import { CHANNELS, CATEGORIES, type Category } from "@/data/channels";
 import type { Akis } from "@/lib/epg";
 
 /** Yayın saatini Türkiye saatine göre biçimler. */
@@ -466,12 +467,7 @@ export default function Home() {
                         <span className="hidden w-5 shrink-0 text-right text-xs tabular-nums text-neutral-600 lg:block">
                           {no}
                         </span>
-                        <span
-                          className="grid h-10 w-14 shrink-0 place-items-center rounded-md text-xs font-bold tracking-wide"
-                          style={{ backgroundColor: c.color }}
-                        >
-                          {initials(c.name)}
-                        </span>
+                        <KanalLogo channel={c} className="h-10 w-14 shrink-0 rounded-md" />
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm font-medium">{c.name}</span>
                           <span className="block truncate text-xs text-neutral-500">
