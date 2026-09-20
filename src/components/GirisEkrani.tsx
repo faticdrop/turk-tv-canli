@@ -1,44 +1,56 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const VIDEO_YOLU = "/giris-video.mp4";
 /** Geçiş animasyonunun süresi; CSS süresiyle aynı olmalı. */
 const GECIS_MS = 900;
+/** Video başladıktan kaç ms sonra başlat düğmesi görünsün. */
+const DUGME_GECIKMESI = 3000;
 
 export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
   const [cikiyor, setCikiyor] = useState(false);
   const [videoVar, setVideoVar] = useState(true);
-  const [sessiz, setSessiz] = useState(true);
-  const [bitti, setBitti] = useState(false);
+  const [basladi, setBasladi] = useState(false);
+  const [dugmeGorunur, setDugmeGorunur] = useState(false);
+  /** Kullanıcı hareketine rağmen ses engellendiyse (ender) gösterilir. */
+  const [sessizKaldi, setSessizKaldi] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const zamanRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  /**
-   * Tarayıcılar sesli otomatik oynatmayı engeller. Önce sesli denenir
-   * (kullanıcı siteyle daha önce etkileşmişse izin verilebilir), engellenirse
-   * sessize alınıp yeniden denenir — böylece video her hâlükârda başlar.
-   */
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = false;
-    v.play().then(
-      () => setSessiz(false),
-      () => {
-        v.muted = true;
-        setSessiz(true);
-        v.play().catch(() => {});
-      },
-    );
+  useEffect(() => () => {
+    if (zamanRef.current) clearTimeout(zamanRef.current);
   }, []);
 
-  /** Kullanıcı hareketi olduğu için burada sesi açmaya izin verilir. */
+  /**
+   * Video yalnızca kullanıcı dokunuşuyla başlar. Dokunuş bir kullanıcı
+   * hareketi sayıldığı için tarayıcı sesli oynatmaya izin verir; bu yüzden
+   * ayrıca "sesi aç" adımına gerek kalmaz.
+   */
+  const oynat = useCallback(() => {
+    const v = videoRef.current;
+    if (!v || basladi) return;
+    setBasladi(true);
+    v.muted = false;
+    v.play().catch(() => {
+      // Beklenmedik biçimde engellenirse sessiz oynat ve ses seçeneği sun
+      v.muted = true;
+      setSessizKaldi(true);
+      v.play().catch(() => {});
+    });
+  }, [basladi]);
+
   const sesiAc = () => {
     const v = videoRef.current;
     if (!v) return;
     v.muted = false;
-    setSessiz(false);
-    v.play().catch(() => {});
+    setSessizKaldi(false);
+  };
+
+  /** Düğme, video gerçekten oynamaya başladıktan 3 saniye sonra belirir. */
+  const oynamayaBasladi = () => {
+    if (zamanRef.current) return;
+    zamanRef.current = setTimeout(() => setDugmeGorunur(true), DUGME_GECIKMESI);
   };
 
   const basla = () => {
@@ -49,8 +61,7 @@ export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
 
   return (
     <div
-      // Ekranın herhangi bir yerine dokunmak da sesi açar
-      onPointerDown={sessiz ? sesiAc : undefined}
+      onPointerDown={oynat}
       className={`fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-neutral-950 transition-all duration-[900ms] ease-[cubic-bezier(0.65,0,0.35,1)] ${
         cikiyor ? "pointer-events-none scale-110 opacity-0 blur-md" : "scale-100 opacity-100"
       }`}
@@ -60,8 +71,6 @@ export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
         <div className="absolute left-1/4 top-2/3 h-80 w-80 rounded-full bg-fuchsia-500/10 blur-[100px]" />
       </div>
 
-      {/* min-h-dvh + auto kaydırma: yatay moddaki kısa ekranda başlık, video ve
-          düğme sığmayınca düğme erişilemez hale geliyordu. */}
       <div className="relative flex min-h-dvh flex-col items-center justify-center gap-6 px-5 py-8">
         <h1 className="giris-yaz text-center text-2xl font-semibold tracking-tight text-white sm:text-4xl">
           Fatih Özen&apos;den TV uygulaması
@@ -74,30 +83,37 @@ export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
                 ref={videoRef}
                 className="aspect-video h-full w-full object-cover"
                 src={VIDEO_YOLU}
-                autoPlay
                 playsInline
                 preload="auto"
-                onVolumeChange={(e) => setSessiz(e.currentTarget.muted)}
-                // loop yok: video bir kez oynar ve son karede durur
-                onEnded={() => setBitti(true)}
+                onPlaying={oynamayaBasladi}
                 onError={() => setVideoVar(false)}
               />
 
-              {sessiz && !bitti && (
+              {!basladi && (
+                <div className="absolute inset-0 grid place-items-center bg-black/45">
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="grid h-20 w-20 place-items-center rounded-full bg-white/95 shadow-2xl ring-4 ring-white/30">
+                      <svg viewBox="0 0 24 24" className="ml-1.5 h-9 w-9 text-neutral-900" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </span>
+                    <span className="rounded-full bg-black/70 px-4 py-1.5 text-sm font-medium text-white">
+                      Başlatmak için ekrana dokunun
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {basladi && sessizKaldi && (
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     sesiAc();
                   }}
-                  className="absolute inset-0 grid place-items-center bg-black/30 transition hover:bg-black/40"
                   aria-label="Sesi aç"
+                  className="absolute bottom-3 left-3 rounded-full bg-black/75 px-4 py-2 text-sm font-medium text-white backdrop-blur"
                 >
-                  <span className="flex items-center gap-2.5 rounded-full bg-white/95 px-5 py-3 text-sm font-semibold text-neutral-900 shadow-xl">
-                    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="currentColor">
-                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a6.99 6.99 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z" />
-                    </svg>
-                    Sesi aç
-                  </span>
+                  Sesi aç
                 </button>
               )}
             </>
@@ -115,12 +131,19 @@ export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
           )}
         </div>
 
+        {/* Düğme video oynamaya başladıktan 3 saniye sonra belirir */}
         <button
           onClick={(e) => {
             e.stopPropagation();
             basla();
           }}
-          className="giris-dugme giris-dugme-dikkat relative rounded-full px-9 py-4 text-base font-bold tracking-wide shadow-xl transition-transform active:scale-95 sm:text-lg"
+          aria-hidden={!dugmeGorunur}
+          tabIndex={dugmeGorunur ? 0 : -1}
+          className={`giris-dugme-dikkat relative rounded-full px-9 py-4 text-base font-bold tracking-wide shadow-xl transition-all duration-500 active:scale-95 sm:text-lg ${
+            dugmeGorunur
+              ? "pointer-events-auto translate-y-0 opacity-100"
+              : "pointer-events-none translate-y-3 opacity-0"
+          }`}
         >
           Uygulamayı Başlat
         </button>
