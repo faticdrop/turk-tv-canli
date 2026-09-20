@@ -36,6 +36,8 @@ export const LOGOLAR: Record<string, string> = {
   "trt-turk": "/logolar/trt-turk.png",
   "trt-world": "/logolar/trt-world.png",
   "trt1": "/logolar/trt1.png",
+  "tv24": "/logolar/tv24.png",
   "tv360": "/logolar/tv360.png",
+  "tv4": "/logolar/tv4.png",
   "ulusal": "/logolar/ulusal.png",
 };
