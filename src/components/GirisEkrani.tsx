@@ -79,9 +79,14 @@ export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
         <div className="giris-video relative w-full max-w-3xl overflow-hidden rounded-2xl bg-black shadow-2xl ring-1 ring-white/15">
           {videoVar ? (
             <>
+              {/* Video başlayana kadar gizlenir: ilk karesi videonun geri
+                  kalanından farklı bir sahne gösterdiği için ön izleme
+                  olarak kullanılamıyor. */}
               <video
                 ref={videoRef}
-                className="aspect-video h-full w-full object-cover"
+                className={`aspect-video h-full w-full object-cover transition-opacity duration-500 ${
+                  basladi ? "opacity-100" : "opacity-0"
+                }`}
                 src={VIDEO_YOLU}
                 playsInline
                 preload="auto"
@@ -90,7 +95,7 @@ export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
               />
 
               {!basladi && (
-                <div className="absolute inset-0 grid place-items-center bg-black/45">
+                <div className="absolute inset-0 grid place-items-center bg-neutral-950">
                   <div className="flex flex-col items-center gap-3">
                     <span className="grid h-20 w-20 place-items-center rounded-full bg-white/95 shadow-2xl ring-4 ring-white/30">
                       <svg viewBox="0 0 24 24" className="ml-1.5 h-9 w-9 text-neutral-900" fill="currentColor">
