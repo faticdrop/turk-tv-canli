@@ -132,3 +132,10 @@ body {
     background-position: 0% 50%;
   }
 }
+
+/* Logo duvarı için 16 sütun (Tailwind varsayılanında yok) */
+@media (min-width: 640px) {
+  .sm\:grid-cols-16 {
+    grid-template-columns: repeat(16, minmax(0, 1fr));
+  }
+}

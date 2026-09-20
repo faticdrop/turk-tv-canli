@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import LogoDuvari from "@/components/LogoDuvari";
 
 const VIDEO_YOLU = "/giris-video.mp4";
 /** Geçiş animasyonunun süresi; CSS süresiyle aynı olmalı. */
@@ -95,12 +96,8 @@ export default function GirisEkrani({ onBasla }: { onBasla: () => void }) {
               />
 
               {!basladi && (
-                <div
-                  className="absolute inset-0 grid place-items-center bg-neutral-950 bg-cover bg-center"
-                  style={{ backgroundImage: "url(/studyo.svg)" }}
-                >
-                  {/* oynat simgesi ve yazı okunaklı kalsın diye hafif karartma */}
-                  <div className="absolute inset-0 bg-neutral-950/35" />
+                <div className="absolute inset-0 grid place-items-center">
+                  <LogoDuvari />
                   <div className="relative flex flex-col items-center gap-3">
                     <span className="grid h-20 w-20 place-items-center rounded-full bg-white/95 shadow-2xl ring-4 ring-white/30">
                       <svg viewBox="0 0 24 24" className="ml-1.5 h-9 w-9 text-neutral-900" fill="currentColor">
